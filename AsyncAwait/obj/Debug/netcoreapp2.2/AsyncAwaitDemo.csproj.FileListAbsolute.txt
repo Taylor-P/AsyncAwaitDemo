@@ -1,0 +1,11 @@
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\bin\Debug\netcoreapp2.2\AsyncAwaitDemo.deps.json
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\bin\Debug\netcoreapp2.2\AsyncAwaitDemo.runtimeconfig.json
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\bin\Debug\netcoreapp2.2\AsyncAwaitDemo.runtimeconfig.dev.json
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\bin\Debug\netcoreapp2.2\AsyncAwaitDemo.dll
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\bin\Debug\netcoreapp2.2\AsyncAwaitDemo.pdb
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\obj\Debug\netcoreapp2.2\AsyncAwaitDemo.csprojAssemblyReference.cache
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\obj\Debug\netcoreapp2.2\AsyncAwaitDemo.csproj.CoreCompileInputs.cache
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\obj\Debug\netcoreapp2.2\AsyncAwaitDemo.AssemblyInfoInputs.cache
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\obj\Debug\netcoreapp2.2\AsyncAwaitDemo.AssemblyInfo.cs
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\obj\Debug\netcoreapp2.2\AsyncAwaitDemo.dll
+C:\BitBucket\Training\AsyncAwait\AsyncAwait\obj\Debug\netcoreapp2.2\AsyncAwaitDemo.pdb
