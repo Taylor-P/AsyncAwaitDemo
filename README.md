@@ -1,3 +1,9 @@
 ﻿# C# Async Await Demo
 
-Demo Repo showing simple Async Await. Console App .Net Core
+Demo showing a small group of methods called using.
+
+1. Sync calls
+2. Sync Over Async calls
+3. Async calls
+
+Console App .Net Core 2.2

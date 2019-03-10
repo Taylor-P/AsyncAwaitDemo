@@ -692,11 +692,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\BitBucket\\Training\\AsyncAwait\\AsyncAwait\\AsyncAwaitDemo.csproj",
+      "projectUniqueName": "C:\\Development\\GitHub\\AsyncAwaitDemo\\AsyncAwait\\AsyncAwaitDemo.csproj",
       "projectName": "AsyncAwaitDemo",
-      "projectPath": "C:\\BitBucket\\Training\\AsyncAwait\\AsyncAwait\\AsyncAwaitDemo.csproj",
+      "projectPath": "C:\\Development\\GitHub\\AsyncAwaitDemo\\AsyncAwait\\AsyncAwaitDemo.csproj",
       "packagesPath": "C:\\Users\\ptaylor\\.nuget\\packages\\",
-      "outputPath": "C:\\BitBucket\\Training\\AsyncAwait\\AsyncAwait\\obj\\",
+      "outputPath": "C:\\Development\\GitHub\\AsyncAwaitDemo\\AsyncAwait\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

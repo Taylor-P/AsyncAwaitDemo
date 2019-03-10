@@ -2,5 +2,6 @@
 {
     public class Egg
     {
+        public int CookTime => 45000;
     }
 }

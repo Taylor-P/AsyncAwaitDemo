@@ -11,47 +11,105 @@ namespace AsyncAwaitDemo
             while (true)
             {
 
-                Console.WriteLine("Run Breakfast asynchronously? Y/N"); // Prompt
-                var line = Console.ReadLine() ?? "y"; // Get string from user
+                Console.WriteLine("Make Breakfast using differnt levels asynchronicity");
+                Console.WriteLine("Enter 1 for sync");
+                Console.WriteLine("Enter 2 for sync over async");
+                Console.WriteLine("Enter 3 for async");
+
+                var line = Console.ReadLine() ?? "3"; 
 
                 DateTime start;
+                TimeSpan difference;
 
-                if (line.ToLower() == "n") // Check string
+                switch (line)
                 {
-                    Console.WriteLine("Sync Cooking");
-                    start = DateTime.UtcNow;
-                    HotWater hotwater = BoilKettle();
-                    Egg eggs = FryEgg(2);
-                    Bacon bacon = FryBacon(3);
-                    Toast toast = MakeToast(3);
-                    ButterToast(toast);
-                    Tea tea = MakeTea(hotwater);
-                    Console.WriteLine("Breakfast is ready!");
-                    TimeSpan difference = DateTime.UtcNow.Subtract(start);
-                    Console.WriteLine($"Time taken {difference.TotalSeconds} (seconds)");
-                }
-                else
-                {
-                    Console.WriteLine("Async Cooking");
-                    start = DateTime.UtcNow;
-                    Task<HotWater> hotwaterAsync = BoilKettleAsync();
-                    Task<Egg> eggsaAsync = FryEggAsync(2);
-                    Task<Bacon> baconAsync = FryBaconAsync(3);
-                    Task<Toast> toastAsync = MakeToastAsync(3);
-                    toastAsync = ToastWithButter(toastAsync);
-                    Task<Tea> teaAsync = TeaWithHotWater(hotwaterAsync);
-                    await Task.WhenAll(hotwaterAsync, eggsaAsync, baconAsync, toastAsync, teaAsync);
-                    Console.WriteLine("Breakfast is ready!");
-                    TimeSpan difference = DateTime.UtcNow.Subtract(start);
-                    Console.WriteLine($"Time taken {difference.TotalSeconds} (seconds)");
+                    case "1": 
+                    
+                        WriteMessage("sync selected");
+                        start = DateTime.UtcNow;
+                        Kettle hotwater = BoilKettle();
+                        Egg eggs = FryEgg(2);
+                        Bacon bacon = FryBacon(3);
+                        Toast toast = MakeToast(3);
+                        ButterToast(toast);
+                        Tea tea = MakeTea(hotwater);
+                        WriteMessage("Breakfast is ready!");
+                        difference = DateTime.UtcNow.Subtract(start);
+                        WriteMessage($"Time taken {difference.TotalSeconds} (seconds)");
+                        break;
+
+                    case "2":
+                        WriteMessage("sync over async");
+                        start = DateTime.UtcNow;
+                        Task<Kettle> hotwaterAsync = BoilKettleAsync();
+                        Task<Egg> eggsaAsync = FryEggAsync(2);
+                        Task<Bacon> baconAsync = FryBaconAsync(3);
+                        Task<Toast> toastAsync = MakeToastAsync(3);
+                        /*
+                        We are calling ButterToast synchronously
+                        i.e we have to await the result of toastAsync 
+                        to pass it ButterToast affectlying making the process
+                        syncronously
+                        */
+                        WriteMessage("Awaiting Toast");
+                        var toastready = await toastAsync;
+                        ButterToast(toastready);
+                        /*
+                        We are calling MakeTea synchronously
+                        i.e we have to await the result of hotwaterAsync 
+                        to pass it MakeTea affectlying making the process
+                        syncronously
+                        */
+                        WriteMessage("Awaiting Kettle");
+                        var hotwaterready = await hotwaterAsync;
+                        MakeTea(hotwaterready);
+
+                        WriteMessage("Awaiting Breakfast");
+                        await Task.WhenAll(hotwaterAsync, eggsaAsync, baconAsync, toastAsync);
+                        WriteMessage("Breakfast is ready!");
+                        difference = DateTime.UtcNow.Subtract(start);
+                        WriteMessage($"Time taken {difference.TotalSeconds} (seconds)");
+                        break;
+
+                    case "3":
+                    
+                        WriteMessage("async");
+                        start = DateTime.UtcNow;
+                        Task<Kettle> hotwaterFullAsync = BoilKettleAsync();
+                        Task<Egg> eggsFullAsync = FryEggAsync(2);
+                        Task<Bacon> baconFullAsync = FryBaconAsync(3);
+                        Task<Toast> toastFullAsync = MakeToastAsync(3);
+                        /*
+                        We pass the Task returned from MakeToastAsync to ToastWithButter so the thread can continue
+                        processing. ToastWithButter awaits the Task.
+                        */
+                        toastFullAsync = ToastWithButter(toastFullAsync);
+                        /*
+                        We pass the Task returned from hotwaterFullAsync to TeaWithHotWater so the thread can continue
+                        processing. TeaWithHotWater awaits the Task.
+                        */
+                        Task<Tea> teaFullAsync = TeaWithHotWater(hotwaterFullAsync);
+                        WriteMessage("Awaiting Breakfast");
+                        await Task.WhenAll(hotwaterFullAsync, eggsFullAsync, baconFullAsync, toastFullAsync, teaFullAsync);
+                        WriteMessage("Breakfast is ready!");
+                        difference = DateTime.UtcNow.Subtract(start);
+                        WriteMessage($"Time taken {difference.TotalSeconds} (seconds)");
+                        break;
+                    
                 }
             }
         }
 
         #region methods
 
-        private static async Task<Tea> TeaWithHotWater(Task<HotWater> hotwater)
+        private static void WriteMessage(string message)
         {
+            Console.WriteLine($"{DateTime.UtcNow} {message} ");
+        }
+
+        private static async Task<Tea> TeaWithHotWater(Task<Kettle> hotwater)
+        {
+            WriteMessage("Awaiting Kettle");
             var hotwaterReady = await hotwater;
             return MakeTea(hotwaterReady);
             
@@ -59,6 +117,7 @@ namespace AsyncAwaitDemo
 
         private static async Task<Toast> ToastWithButter(Task<Toast> breadToasted)
         {
+            WriteMessage("Awaiting Toast");
             var toast = await breadToasted;
             ButterToast(toast);
             return toast;
@@ -66,108 +125,117 @@ namespace AsyncAwaitDemo
 
         private static void ButterToast(Toast toast)
         {
-            Console.WriteLine($"Buttering Toast");
-            Console.WriteLine("Toast is ready");
+            WriteMessage($"Buttering Toast");
+            WriteMessage("Toast is ready");
         }
 
         private static Toast MakeToast(int slices)
         {
-            Console.WriteLine($"Toasting {slices} slices of Toast in toaster");
-            Task.Delay(20000).Wait();
-            Console.WriteLine("Adding Toast to plate");
-            return  new Toast();
+            var toast = new Toast();
+            WriteMessage($"Toasting {slices} slices of Toast in toaster");
+            Task.Delay(toast.Toasttime).Wait();
+            WriteMessage("Adding Toast to plate");
+            return toast;
         }
 
         private static async Task<Toast> MakeToastAsync(int slices)
         {
-            Console.WriteLine($"Toasting {slices} slices of Toast in toaster");
-            await Task.Delay(20000);
-            Console.WriteLine("Adding Toast to plate");
-            return new Toast();
+            var toast = new Toast();
+            WriteMessage($"Toasting {slices} slices of Toast in toaster");
+            await Task.Delay(toast.Toasttime);
+            WriteMessage("Adding Toast to plate");
+            return toast;
         }
 
-        private static Tea MakeTea(HotWater hotwater)
+        private static Tea MakeTea(Kettle hotwater)
         {
-            Console.WriteLine("Place Tea bag in Cup");
+            WriteMessage("Place Tea bag in Cup");
             Task.Delay(500).Wait();
-            Console.WriteLine("Pour Water into Cup");
+            WriteMessage("Pour Water into Cup");
             Task.Delay(500).Wait();
-            Console.WriteLine("Take out tea bag");
+            WriteMessage("Take out tea bag");
             Task.Delay(500).Wait();
-            Console.WriteLine("add milk to brew");
-            Console.WriteLine("Tea is ready");
+            WriteMessage("add milk to brew");
+            WriteMessage("Tea is ready");
             return new Tea();
         }
 
-        private static HotWater BoilKettle()
+        private static Kettle BoilKettle()
         {
-            Console.WriteLine("Fill Kettle With Water");
-            Task.Delay(3000).Wait();
-            Console.WriteLine("Boil Kettle");
-            Task.Delay(40000).Wait();
-            Console.WriteLine("Hot Water ready");
-            return new HotWater();
+            var kettle = new Kettle();
+            WriteMessage("Fill Kettle With Water");
+            Task.Delay(kettle.Filltime).Wait();
+            WriteMessage("Boil Kettle");
+            Task.Delay(kettle.BoilTime).Wait();
+            WriteMessage("Hot Water ready");
+            return kettle;
         }
 
-        private static async Task<HotWater> BoilKettleAsync()
+        private static async Task<Kettle> BoilKettleAsync()
         {
-            Console.WriteLine("Fill Kettle With Water");
-            Task.Delay(3000).Wait();
-            Console.WriteLine("Boil Kettle");
-            await Task.Delay(40000);
-            Console.WriteLine("Hot Water ready");
-            return new HotWater();
+            var kettle = new Kettle();
+            WriteMessage("Fill Kettle With Water");
+            Task.Delay(kettle.Filltime).Wait();
+            WriteMessage("Boil Kettle");
+            await Task.Delay(kettle.BoilTime);
+            WriteMessage("Hot Water ready");
+            return kettle;
         }
 
         private static Egg FryEgg(int eggs)
         {
-            Console.WriteLine($"cracking {eggs} eggs in the pan");
-            Console.WriteLine("cooking the eggs");
-            Task.Delay(45000).Wait();
-            Console.WriteLine("Adding eggs to plate");
-            Console.WriteLine("Eggs are ready");
-            return new Egg();
+            var egg = new Egg();
+            WriteMessage($"cracking {eggs} eggs in the pan");
+            WriteMessage("cooking the eggs");
+            Task.Delay(egg.CookTime).Wait();
+            WriteMessage("Adding eggs to plate");
+            WriteMessage("Eggs are ready");
+            return egg;
         }
 
         private static async Task<Egg> FryEggAsync(int eggs)
         {
-            Console.WriteLine($"cracking {eggs} eggs in the pan");
-            Console.WriteLine("cooking the eggs");
-            await Task.Delay(45000);
-            Console.WriteLine("Adding eggs to plate");
-            Console.WriteLine("Eggs are ready");
-            return new Egg();
+            var egg = new Egg();
+            WriteMessage($"cracking {eggs} eggs in the pan");
+            WriteMessage("cooking the eggs");
+            await Task.Delay(egg.CookTime);
+            WriteMessage("Adding eggs to plate");
+            WriteMessage("Eggs are ready");
+            return egg;
         }
 
         private static Bacon FryBacon(int slices)
         {
-            Console.WriteLine($"putting {slices} slices of bacon in the pan");
-            Console.WriteLine("cooking the bacon");
-            Task.Delay(25000).Wait();
+            var bacon = new Bacon();
+            WriteMessage($"putting {slices} slices of bacon in the pan");
+            WriteMessage("cooking the bacon");
+            Task.Delay(bacon.Cooktime).Wait();
             for (var slice = 0; slice < slices; slice++)
             {
-                Console.WriteLine("Fliping a slice of bacon");
+                WriteMessage("Fliping a slice of bacon");
             }
-            Console.WriteLine("cooking the bacon");
-            Task.Delay(25000).Wait();
-            Console.WriteLine("putting the bacon on the plate");
-            Console.WriteLine("Bacon is ready");
-            return new Bacon();
+            WriteMessage("cooking the bacon");
+            Task.Delay(bacon.Cooktime).Wait();
+            WriteMessage("putting the bacon on the plate");
+            WriteMessage("Bacon is ready");
+            return bacon;
         }
 
         private static async Task<Bacon> FryBaconAsync(int slices)
         {
-            Console.WriteLine($"putting {slices} slices of bacon in the pan");
-            Console.WriteLine("cooking the bacon");
-            await Task.Delay(25000);
+            var bacon = new Bacon();
+            WriteMessage($"putting {slices} slices of bacon in the pan");
+            WriteMessage("cooking the bacon");
+            await Task.Delay(bacon.Cooktime);
             for (var slice = 0; slice < slices; slice++)
             {
-                Console.WriteLine("Fliping a slice of bacon");
+                WriteMessage("Fliping a slice of bacon");
             }
-            Console.WriteLine("cooking the bacon");
-            await Task.Delay(25000);
-            Console.WriteLine("putting the bacon on the plate");
-            Console.WriteLine("Bacon is ready");
+
+            WriteMessage("cooking the bacon");
+            await Task.Delay(bacon.Cooktime);
+            WriteMessage("putting the bacon on the plate");
+            WriteMessage("Bacon is ready");
             return new Bacon();
         }
 
